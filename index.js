@@ -54,55 +54,55 @@ function BD ()
 
 }
 
-function BILHETE(bd)
+function BILHETE(bd) //clase Bilhete
 {
     
     this.bd = bd;
 
-    this.inclua = async function (bilhete)
+    this.inclua = async function (bilhete) //função para incluir um bilhete na tabela Bilhete do banco de dados
 	{
-		const conexao = await this.bd.getConexao();
+		const conexao = await this.bd.getConexao();//aguardando conexao com o banco de dados
 		
 		const sql1 = "INSERT INTO BILHETE (codigo,horaG,dataG) "+
-		             "VALUES (:0,:1,sysdate)";
-		const dados = [(Math.abs(bilhete.codigo)),(bilhete.horaG)];
+		             "VALUES (:0,:1,sysdate)";    //string para o insert na Tabela Bilhete
+		const dados = [(Math.abs(bilhete.codigo)),(bilhete.horaG)]; //criação do obejto
 		console.log(sql1, dados);
-		await conexao.execute(sql1,dados);
+		await conexao.execute(sql1,dados); //execução do commando
 		
-		const sql2 = 'COMMIT';
-		await conexao.execute(sql2);	
+		const sql2 = 'COMMIT'; 
+		await conexao.execute(sql2);	//execução do commando
 	}	
 
 }
 
-function CARGA(bd)
+function CARGA(bd) //classe Carga
 {
     
     this.bd = bd;
 
-    this.inclua = async function (carga)
+    this.inclua = async function (carga)  //função para incluir um bilhete na tabela Carga do banco de dados
 	{
-		const conexao = await this.bd.getConexao();
+		const conexao = await this.bd.getConexao(); //aguardando conexao com o banco de dados
 		
 		const sql1 = "INSERT INTO CARGA (codCarga,codFk,tipo,quantidade,dataG) "+
-		             "VALUES (:0,:1,:2,:3,sysdate)";
+		             "VALUES (:0,:1,:2,:3,sysdate)"; //string para o insert na Tabela Carga
 		const dados = [(carga.codCarga),(carga.codFK),(carga.tipo.toString()),(carga.quantidade)];
 		console.log(sql1, dados);
-		await conexao.execute(sql1,dados);
+		await conexao.execute(sql1,dados); //execução do commando
 		
 		const sql2 = 'COMMIT';
-		await conexao.execute(sql2);	
+		await conexao.execute(sql2);	//execução do commando
 	}	
 
 }
 
-function Bilhete (codigo,horaG,dataG)
+function Bilhete (codigo,horaG,dataG) //construtor do bilhete
 {
 	    this.codigo = codigo;
 	    this.horaG   = horaG;
 	    this.dataG = dataG;
 }
-function Carga (codCarga,codFK,tipo,quantidade,dataG)
+function Carga (codCarga,codFK,tipo,quantidade,dataG) //construtor da carga
 {
 	    this.codCarga = codCarga;
 	    this.codFK   = codFK;
@@ -112,7 +112,7 @@ function Carga (codCarga,codFK,tipo,quantidade,dataG)
 }
 
 
-function Comunicado (codigo,mensagem,descricao)
+function Comunicado (codigo,mensagem,descricao) //construtor do comunicado
 {
 	this.codigo    = codigo;
 	this.mensagem  = mensagem;
@@ -132,7 +132,7 @@ function middleWareGlobal (req, res, next)
     console.timeEnd('Requisição'); // marca o fim da requisição
 }
 
-async function inclusao (req, res)
+async function inclusao (req, res) //função para fazer a Inclusão do Bilhete
 {
     
     const bilhete = new Bilhete (req.body.codigo,req.body.horaG,req.body.dataG);
@@ -142,7 +142,7 @@ async function inclusao (req, res)
 		var test = bilhete.codigo;
 		var teste = test.toString();
 
-        await  global.Bilhetes.inclua(bilhete);
+        await  global.Bilhetes.inclua(bilhete); //chamada da função que inclui no bd
         const  sucesso = new Comunicado ('Sucesso','Numero do Bilhete ',
 		                  teste);
         return res.status(201).json(sucesso);
@@ -156,7 +156,7 @@ async function inclusao (req, res)
     }
 }
 
-async function inclusaoCarga (req, res)
+async function inclusaoCarga (req, res) //função para fazer a inclussão da Recarga
 {
 
     const carga = new Carga (req.body.codCarga,req.body.codFK,req.body.tipo,req.body.quantidade,req.body.dataG);
@@ -165,7 +165,7 @@ async function inclusaoCarga (req, res)
 		var test = carga.codCarga;
 		var teste = test.toString();
 
-        await  global.Cargas.inclua(carga);
+        await  global.Cargas.inclua(carga); //chamada da função que inclui no bd
         const  sucesso = new Comunicado ('Sucesso','Numero da Carga ',
 		                  teste);
         return res.status(201).json(sucesso);
@@ -179,14 +179,14 @@ async function inclusaoCarga (req, res)
     }
 }
 
-async function ativacaoDoServidor ()
+async function ativacaoDoServidor () //função para fazer a primeira ativação do servidor 
 {
-    const bd = new BD ();
-	await bd.estrutureSe();
+    const bd = new BD (); //criação do banco
+	await bd.estrutureSe(); //criação das tabelas
 
 
-    global.Bilhetes = new BILHETE (bd);
-	global.Cargas = new CARGA (bd);
+    global.Bilhetes = new BILHETE (bd); //criação das 
+	global.Cargas = new CARGA (bd); // classes
 
     const express = require('express');
     const app     = express();
@@ -197,10 +197,10 @@ async function ativacaoDoServidor ()
     app.use(middleWareGlobal); // app.use cria o middleware global
 
 
-    app.post  ('/Bilhete'        , inclusao);
-	app.post ('/Carga'            ,inclusaoCarga);
+    app.post  ('/Bilhete'        , inclusao); //link para a integração back-front
+	app.post ('/Carga'            ,inclusaoCarga);//link para a integração back-front
     console.log ('Servidor ativo na porta 3000...');
-    app.listen(3000);
+    app.listen(3000); //porta que o servidor ouvirá
 }
 
-ativacaoDoServidor();
+ativacaoDoServidor(); //ativação do servidor
