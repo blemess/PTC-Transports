@@ -13,23 +13,20 @@
       }
   }
 
-  //Função para geração do bilhete 
   function gerarBilhete() {
-    let codigo = Math.abs(Math.random() * (1000 - 1 + 1) + 1); //geração de um número aleatório entre 1 e 1000
-    let now = new Date(); //data do bilhete gerado
-    let horaG = now.getHours()+ ':' + now.getMinutes(); //hora do bilhete gerado
+    let codigo = Math.abs(Math.random() * (1000 - 1 + 1) + 1);
     if (codigo !== "") 
     {
-          let objBilhete = { codigo: parseInt(codigo), horaG: horaG, dataentrada: '' }; //criação do objeto Bilhete
-          let url = `http://localhost:3000/Bilhete/`//link
+          let objBilhete = { codigo: parseInt(codigo), dataentrada: '' };
+          let url = `http://localhost:3000/Bilhete/`
   
-          let res = axios.post(url, objBilhete) // API AXIOS para integração front/back-end
+          let res = axios.post(url, objBilhete)
           .then(response => {
               if (response.data) {
                   const msg = new Comunicado (response.data.codigo, 
                                               response.data.mensagem, 
                                              Math.abs(response.data.descricao));
-                  alert(msg.get());//geração e exibição da mensagem de sucesso
+                  alert(msg.get());
               }
           })
           .catch(error  =>  {
@@ -38,27 +35,27 @@
                   const msg = new Comunicado (error.response.data.codigo, 
                                               error.response.data.mensagem, 
                                               error.response.data.descricao);
-                  alert(msg.get()); //geração e exibição da mensagem de erro
+                  alert(msg.get());
               }
           })
     }else
     {
-          alert('Erro'); //mensagem de erro
+          alert('Erro');
     }
   }
 
   function gerarCarga(id) {
     
-    let codigo = Math.abs(Math.random() * (1000 - 1 + 1) + 1); //geração de um número aleatório entre 1 e 1000
-    let codFK = document.getElementById('codigo-bilhete').value; //codigo do bilhete fornecido pelo usuario
-    let tipo = id; //tipo de recarga
+    let codigo = Math.abs(Math.random() * (1000 - 1 + 1) + 1);
+    let codFK = document.getElementById('codigo-bilhete').value;
+    let tipo = id;
     
-    if (codigo !== null && quantidade !== null) //Verificação se todos os dados estão preenchidos
+    if (codigo !== null) 
     {
-          let objCarga = { codCarga: parseInt(codigo), codFK:parseInt(codFK),tipo:tipo,quantidade:parseInt(quantidade), datag: '' };//criação do objeto Recarga
-          let url = `http://localhost:3000/Carga/`//link
+          let objCarga = { codCarga: parseInt(codigo), codFK:parseInt(codFK),tipo:tipo, datag: '' };
+          let url = `http://localhost:3000/Carga/`
   
-          let res = axios.post(url, objCarga) //API AXIOS para integração front/back-end
+          let res = axios.post(url, objCarga)
           .then(response => {
               if (response.data) {
                   const msg = new Comunicado (response.data.codigo, 
@@ -78,9 +75,29 @@
           })
     }else
     {
-          alert('Todos os dados devem ser preenchidos'); //mensagem de erro
+          alert('Todos os dados devem ser preenchidos');
     }
   }
 
+  function historico(){
+    let url = `http://localhost:3000/Historico/`
+
+    axios.get(url)
+    .then(response => {
+        criaLista(response.data)        
+    })
+    .catch(error  =>  {
+        alert(error)    
+    })
+
+    const criaLista = ( usos) => {
+        const ulUsos = document.getElementById('usos')
+        usos.map(uso => {
+            const listaUso = document.createElement('li')
+            listaUso.innerHTML = `Codigo: ${uso.codigo} -Data de Entrada: ${uso.dataentrada}`
+            ulUsos.appendChild(listaVeiculo)
+    })
+  }
+}
 
 
